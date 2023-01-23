@@ -1,0 +1,44 @@
+name: maven
+
+on:
+  workflow_call:
+    inputs:
+      SONAR_PROJECT_KEY:
+        required: true
+        type: string
+    secrets:
+      SONAR_TOKEN:
+        required: true
+      SONAR_HOST_URL:
+        required: true
+      GPG_PRIVATE_KEY:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
+
+permissions:
+  packages: read
+
+jobs:
+  package:
+    uses: ./.github/workflows/maven-package.yml
+  verify:
+    needs: package
+    uses: ./.github/workflows/maven-verify.yml
+  sonar:
+    needs: verify
+    if: inputs.SONAR_PROJECT_KEY != ''
+    uses: ./.github/workflows/maven-sonar.yml
+    with:
+      project-key: ${{ inputs.SONAR_PROJECT_KEY }}
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  deploy:
+    needs: verify
+    permissions:
+      packages: write
+    uses: ./.github/workflows/maven-deploy.yml
+    secrets:
+      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
