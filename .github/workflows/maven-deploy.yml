@@ -1,0 +1,25 @@
+name: Deploy to Github
+
+on:
+  workflow_call:
+    secrets:
+      GPG_PRIVATE_KEY:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
+
+jobs:
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: dbstar-org/setup-maven@v1
+        with:
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+      - name: Deploy to Github
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn -B -U clean deploy -P release,distribution-github
