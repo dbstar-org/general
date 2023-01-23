@@ -11,8 +11,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
     steps:
       - uses: dbstar-org/setup-maven@v1
         with:
