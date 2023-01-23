@@ -1,0 +1,14 @@
+name: Package with Maven
+
+on:
+  workflow_call:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dbstar-org/setup-maven@v1
+      - name: Package with Maven
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: mvn -B -U clean package -DskipTests=true
