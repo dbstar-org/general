@@ -5,7 +5,6 @@ on:
 
 jobs:
   verify:
-    needs: package
     runs-on: ubuntu-latest
     steps:
       - uses: dbstar-org/setup-maven@v1
