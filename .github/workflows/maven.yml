@@ -8,9 +8,9 @@ on:
         type: string
     secrets:
       SONAR_TOKEN:
-        required: true
+        required: false
       SONAR_HOST_URL:
-        required: true
+        required: false
       GPG_PRIVATE_KEY:
         required: true
       GPG_PASSPHRASE:
