@@ -29,6 +29,17 @@ jobs:
           [ -z "$GPG_PRIVATE_KEY" ] && echo "::warning title=Release with Maven::need secrets.GPG_PRIVATE_KEY" && CONTINUE=false
           [ -z "$GPG_PASSPHRASE" ] && echo "::warning title=Release with Maven::need secrets.GPG_PASSPHRASE" && CONTINUE=false
           echo "continue=$CONTINUE" >> $GITHUB_OUTPUT
+      - name: Verify Ossrh Parameter
+        id: verify-ossrh
+        if: steps.verify.outputs.continue == 'true'
+        env:
+          OSS_USERNAME: ${{ secrets.OSS_USERNAME }}
+          OSS_PASSWORD: ${{ secrets.OSS_PASSWORD }}
+        run: |
+          CONTINUE=true
+          [ -z "$OSS_USERNAME" ] && echo "::notice title=Release to Ossrh::add secrets.OSS_USERNAME to launch" && CONTINUE=false
+          [ -z "$OSS_PASSWORD" ] && echo "::notice title=Release to Ossrh::add secrets.OSS_PASSWORD to launch" && CONTINUE=false
+          echo "continue=$CONTINUE" >> $GITHUB_OUTPUT
       - name: Setup Maven
         if: steps.verify.outputs.continue == 'true'
         uses: dbstar-org/setup-maven@v1
@@ -39,6 +50,7 @@ jobs:
         run: |
           git config --local user.name ${{ github.actor }}
           git config --local user.email ${{ github.actor }}@gmail.com
+          git config --local commit.gpgsign true
       - name: Configure Git Signing
         if: steps.verify.outputs.continue == 'true'
         env:
@@ -56,7 +68,7 @@ jobs:
         run: mvn -B -U release:prepare -P release,distribution-github -DsignTag=true
 
       - name: Backup Release Properties
-        if: steps.verify.outputs.continue == 'true'
+        if: steps.verify.outputs.continue == 'true' && steps.verify-ossrh.outputs.continue == 'true'
         run: cp ${{ github.workspace }}/release.properties ${{ github.workspace }}/release.properties.bak
 
       - name: Perform Release to Github
@@ -67,18 +79,14 @@ jobs:
         run: mvn -B -U release:perform -P release,distribution-github
 
       - name: Restore Release Properties from Backup
-        if: steps.verify.outputs.continue == 'true'
+        if: steps.verify.outputs.continue == 'true' && steps.verify-ossrh.outputs.continue == 'true'
         run: mv ${{ github.workspace }}/release.properties.bak ${{ github.workspace }}/release.properties
 
       - name: Perform Release to Ossrh
-        if: steps.verify.outputs.continue == 'true'
+        if: steps.verify.outputs.continue == 'true' && steps.verify-ossrh.outputs.continue == 'true'
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           OSS_USERNAME: ${{ secrets.OSS_USERNAME }}
           OSS_PASSWORD: ${{ secrets.OSS_PASSWORD }}
-        run: |
-          [ -z "$OSS_USERNAME" ] && echo "::notice title=Perform Release to Ossrh::add secrets.OSS_USERNAME to launch" && CONTINUE=false
-          [ -z "$OSS_PASSWORD" ] && echo "::notice title=Perform Release to Ossrh::add secrets.OSS_PASSWORD to launch" && CONTINUE=false
-          [ -z "$CONTINUE" ] || exit 0
-          mvn -B -U release:perform -P release,distribution-ossrh
+        run: mvn -B -U release:perform -P release,distribution-ossrh
