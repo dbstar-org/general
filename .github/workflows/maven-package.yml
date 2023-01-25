@@ -12,3 +12,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: mvn -B -U clean package -DskipTests=true
+      - run: env
