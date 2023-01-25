@@ -39,4 +39,5 @@ jobs:
         run: |
           [ -z "$SONAR_TOKEN" ] && echo "::warning title=SonarQube::need secrets.SONAR_TOKEN" && CONTINUE='stop'
           [ -z "$SONAR_HOST_URL" ] && echo "::warning title=SonarQube::need secrets.SONAR_HOST_URL" && CONTINUE='stop'
-          [ -z "$CONTINUE" ] && mvn -B -U verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ inputs.SONAR_PROJECT_KEY }}
+          [ -z "$CONTINUE" ] || exit 0 
+          mvn -B -U verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ inputs.SONAR_PROJECT_KEY }}
