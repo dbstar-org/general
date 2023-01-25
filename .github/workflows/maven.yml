@@ -17,6 +17,9 @@ on:
 permissions:
   packages: read
 
+env:
+  maven-env: abc
+
 jobs:
   package:
     uses: ./.github/workflows/maven-package.yml

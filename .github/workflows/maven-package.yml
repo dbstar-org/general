@@ -3,6 +3,9 @@ name: Package with Maven
 on:
   workflow_call:
 
+env:
+  package-env: abc
+
 jobs:
   package:
     runs-on: ubuntu-latest
