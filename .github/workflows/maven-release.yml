@@ -7,8 +7,6 @@ on:
         required: false
       GPG_PASSPHRASE:
         required: false
-      GPG_KEY:
-        required: false
       OSS_USERNAME:
         required: false
       OSS_PASSWORD:
@@ -50,14 +48,6 @@ jobs:
         run: |
           git config --local user.name ${{ github.actor }}
           git config --local user.email ${{ github.actor }}@gmail.com
-          git config --local commit.gpgsign true
-      - name: Configure Git Signing
-        if: steps.verify.outputs.continue == 'true'
-        env:
-          GPG_KEY: ${{ secrets.GPG_KEY }}
-        run: |
-          [ -z "$GPG_KEY" ] && echo "::warning title=Release with Maven::add secrets.GPG_KEY to Signing on Git Commit and Tag" && exit 0
-          git config --local user.signingkey $GPG_KEY
           git config --local commit.gpgsign true
 
       - name: Prepare Release
