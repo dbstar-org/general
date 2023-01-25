@@ -30,7 +30,7 @@ jobs:
             [ -z "$SONAR_TOKEN" ] && echo "::warning title=Verify with Maven to SonarQube::need secrets.SONAR_TOKEN" && CONTINUE=false
             [ -z "$SONAR_HOST_URL" ] && echo "::warning title=Verify with Maven to SonarQube::need secrets.SONAR_HOST_URL" && CONTINUE=false
           fi
-          echo "continue=$(echo $CONTINUE)" >> $GITHUB_OUTPUT
+          echo "continue=$CONTINUE" >> $GITHUB_OUTPUT
       - name: Setup Maven
         if: steps.verify.outputs.continue == 'true'
         uses: dbstar-org/setup-maven@v1

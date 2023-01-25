@@ -12,10 +12,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Verify Parameter
+        id: verify
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          CONTINUE=true
+          [ -z "$GPG_PRIVATE_KEY" ] && echo "::warning title=Deploy to Githu::need secrets.GPG_PRIVATE_KEY" && CONTINUE=false
+          [ -z "$GPG_PASSPHRASE" ] && echo "::warning title=Deploy to Githu::need secrets.GPG_PASSPHRASE" && CONTINUE=false
+          echo "continue=$CONTINUE" >> $GITHUB_OUTPUT
       - uses: dbstar-org/setup-maven@v1
+        if: steps.verify.outputs.continue == 'true'
         with:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
       - name: Deploy to Github
+        if: steps.verify.outputs.continue == 'true'
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
