@@ -19,8 +19,8 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           CONTINUE=true
-          [ -z "$GPG_PRIVATE_KEY" ] && echo "::warning title=Deploy to Githu::need secrets.GPG_PRIVATE_KEY" && CONTINUE=false
-          [ -z "$GPG_PASSPHRASE" ] && echo "::warning title=Deploy to Githu::need secrets.GPG_PASSPHRASE" && CONTINUE=false
+          [ -z "$GPG_PRIVATE_KEY" ] && echo "::warning title=Deploy to Github::need secrets.GPG_PRIVATE_KEY" && CONTINUE=false
+          [ -z "$GPG_PASSPHRASE" ] && echo "::warning title=Deploy to Github::need secrets.GPG_PASSPHRASE" && CONTINUE=false
           echo "continue=$CONTINUE" >> $GITHUB_OUTPUT
       - uses: dbstar-org/setup-maven@v1
         if: steps.verify.outputs.continue == 'true'
