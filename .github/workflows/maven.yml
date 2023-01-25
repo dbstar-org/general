@@ -27,7 +27,6 @@ jobs:
     uses: ./.github/workflows/maven-verify.yml
   sonar:
     needs: verify
-    if: inputs.SONAR_PROJECT_KEY != ''
     uses: ./.github/workflows/maven-sonar.yml
     with:
       SONAR_PROJECT_KEY: ${{ inputs.SONAR_PROJECT_KEY }}

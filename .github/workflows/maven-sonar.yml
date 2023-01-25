@@ -13,6 +13,11 @@ on:
         required: true
 
 jobs:
+  sonar-notice:
+    if: inputs.SONAR_PROJECT_KEY == ''
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "::notice title=SonarQube::add vars.SONAR_PROJECT_KEY to Verify with Maven to SonarQube"
   sonar:
     if: inputs.SONAR_PROJECT_KEY != ''
     runs-on: ubuntu-latest
@@ -32,6 +37,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
-          [ -z "$SONAR_TOKEN" ] && echo "::warning title=Check Parameter for SonarQube::need secrets.SONAR_TOKEN" && exit 0
-          [ -z "$SONAR_HOST_URL" ] && echo "::warning title=Check Parameter for SonarQube::need secrets.SONAR_HOST_URL" && exit 0
-          mvn -B -U verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ inputs.SONAR_PROJECT_KEY }}
+          [ -z "$SONAR_TOKEN" ] && echo "::warning title=SonarQube::need secrets.SONAR_TOKEN" && CONTINUE='stop'
+          [ -z "$SONAR_HOST_URL" ] && echo "::warning title=SonarQube::need secrets.SONAR_HOST_URL" && CONTINUE='stop'
+          [ -z "$CONTINUE" ] && mvn -B -U verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ inputs.SONAR_PROJECT_KEY }}
