@@ -30,7 +30,7 @@ jobs:
     if: inputs.SONAR_PROJECT_KEY != ''
     uses: ./.github/workflows/maven-sonar.yml
     with:
-      project-key: ${{ inputs.SONAR_PROJECT_KEY }}
+      SONAR_PROJECT_KEY: ${{ inputs.SONAR_PROJECT_KEY }}
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}

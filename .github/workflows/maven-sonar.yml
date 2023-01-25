@@ -3,7 +3,7 @@ name: Verify with Maven to SonarQube
 on:
   workflow_call:
     inputs:
-      project-key:
+      SONAR_PROJECT_KEY:
         required: true
         type: string
     secrets:
@@ -14,7 +14,7 @@ on:
 
 jobs:
   sonar:
-    if: inputs.project-key != ''
+    if: inputs.SONAR_PROJECT_KEY != ''
     runs-on: ubuntu-latest
     steps:
       - uses: dbstar-org/setup-maven@v1
@@ -26,22 +26,12 @@ jobs:
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
-      - name: Check Parameter secrets.SONAR_TOKEN
-        continue-on-error: true
-        if: env.SONAR_TOKEN == ''
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: echo 'need secrets.SONAR_TOKEN' && exit 1
-      - name: Check Parameter secrets.SONAR_HOST_URL
-        continue-on-error: true
-        if: env.SONAR_HOST_URL == ''
-        env:
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: echo 'need secrets.SONAR_HOST_URL' && exit 1
       - name: Verify with Maven to SonarQube
-        if: env.SONAR_TOKEN != '' && env.SONAR_HOST_URL != ''
         env:
           GITHUB_TOKEN: ${{ github.token }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B -U verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ inputs.project-key }}
+        run: |
+          [ -z "$SONAR_TOKEN" ] && echo "::warning title=Check Parameter for SonarQube::need secrets.SONAR_TOKEN" && exit 0
+          [ -z "$SONAR_HOST_URL" ] && echo "::warning title=Check Parameter for SonarQube::need secrets.SONAR_HOST_URL" && exit 0
+          mvn -B -U verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ inputs.SONAR_PROJECT_KEY }}
