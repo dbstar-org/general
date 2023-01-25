@@ -7,6 +7,8 @@ on:
         required: false
       GPG_PASSPHRASE:
         required: false
+      GIT_USER_EMAIL:
+        required: false
       OSS_USERNAME:
         required: false
       OSS_PASSWORD:
@@ -22,10 +24,12 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          GIT_USER_EMAIL: ${{ secrets.GIT_USER_EMAIL }}
         run: |
           CONTINUE=true
           [ -z "$GPG_PRIVATE_KEY" ] && echo "::warning title=Release with Maven::need secrets.GPG_PRIVATE_KEY" && CONTINUE=false
           [ -z "$GPG_PASSPHRASE" ] && echo "::warning title=Release with Maven::need secrets.GPG_PASSPHRASE" && CONTINUE=false
+          [ -z "$GIT_USER_EMAIL" ] && echo "::warning title=Release with Maven::need secrets.GIT_USER_EMAIL" && CONTINUE=false
           echo "continue=$CONTINUE" >> $GITHUB_OUTPUT
       - name: Verify Ossrh Parameter
         id: verify-ossrh
@@ -46,8 +50,7 @@ jobs:
       - name: Configure Git user
         if: steps.verify.outputs.continue == 'true'
         run: |
-          git config --local user.name ${{ github.actor }}
-          git config --local user.email ${{ github.actor }}@gmail.com
+          git config --local user.email ${{ secrets.GIT_USER_EMAIL }}
           git config --local commit.gpgsign true
 
       - name: Prepare Release
