@@ -13,25 +13,26 @@ on:
         required: true
 
 jobs:
-  sonar-notice:
-    if: inputs.SONAR_PROJECT_KEY == ''
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "::notice title=SonarQube::add vars.SONAR_PROJECT_KEY to Verify with Maven to SonarQube"
   sonar:
-    if: inputs.SONAR_PROJECT_KEY != ''
     runs-on: ubuntu-latest
     steps:
-      - uses: dbstar-org/setup-maven@v1
+      - name: Notice
+        if: inputs.SONAR_PROJECT_KEY == ''
+        run: echo "::notice title=SonarQube::add vars.SONAR_PROJECT_KEY to launch Verify with Maven to SonarQube"
+      - name: Setup Maven
+        if: inputs.SONAR_PROJECT_KEY != ''
+        uses: dbstar-org/setup-maven@v1
         with:
           java-version: 11
           fetch-depth: 0
       - name: Cache SonarQube packages
+        if: inputs.SONAR_PROJECT_KEY != ''
         uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
       - name: Verify with Maven to SonarQube
+        if: inputs.SONAR_PROJECT_KEY != ''
         env:
           GITHUB_TOKEN: ${{ github.token }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
