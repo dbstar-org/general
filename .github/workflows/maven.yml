@@ -2,14 +2,12 @@ name: maven
 
 on:
   workflow_call:
-    inputs:
-      SONAR_HOST_URL:
-        required: false
-        type: string
     secrets:
       SONAR_PROJECT_KEY:
         required: false
       SONAR_TOKEN:
+        required: false
+      SONAR_HOST_URL:
         required: false
       GPG_PRIVATE_KEY:
         required: false
@@ -28,11 +26,10 @@ jobs:
   sonar:
     needs: verify
     uses: ./.github/workflows/maven-sonar.yml
-    with:
-      SONAR_HOST_URL: ${{ inputs.SONAR_HOST_URL }}
     secrets:
       SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
   deploy:
     needs: verify
     permissions:

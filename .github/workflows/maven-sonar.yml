@@ -2,14 +2,12 @@ name: Verify with Maven to SonarQube
 
 on:
   workflow_call:
-    inputs:
-      SONAR_HOST_URL:
-        required: false
-        type: string
     secrets:
       SONAR_PROJECT_KEY:
         required: false
       SONAR_TOKEN:
+        required: false
+      SONAR_HOST_URL:
         required: false
 
 jobs:
@@ -21,14 +19,14 @@ jobs:
         env:
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ inputs.SONAR_HOST_URL }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           CONTINUE=true
           if [ -z "$SONAR_PROJECT_KEY" ]; then
             echo "::notice title=Verify with Maven to SonarQube::add secrets.SONAR_PROJECT_KEY to launch" && CONTINUE=false
           else
             [ -z "$SONAR_TOKEN" ] && echo "::warning title=Verify with Maven to SonarQube::need secrets.SONAR_TOKEN" && CONTINUE=false
-            [ -z "$SONAR_HOST_URL" ] && echo "::warning title=Verify with Maven to SonarQube::need vars.SONAR_HOST_URL" && CONTINUE=false
+            [ -z "$SONAR_HOST_URL" ] && echo "::warning title=Verify with Maven to SonarQube::need secrets.SONAR_HOST_URL" && CONTINUE=false
           fi
           echo "continue=$CONTINUE" >> $GITHUB_OUTPUT
       - name: Setup Maven
@@ -48,5 +46,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ inputs.SONAR_HOST_URL }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: mvn -B -U verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
