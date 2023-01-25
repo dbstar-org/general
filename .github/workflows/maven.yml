@@ -2,6 +2,12 @@ name: maven
 
 on:
   workflow_call:
+    inputs:
+      MAVEN_OPTS:
+        description: 'Parameters used to start up the JVM running Maven.'
+        default: ${{ vars.MAVEN_OPTS }}
+        required: false
+        type: string
     secrets:
       SONAR_PROJECT_KEY:
         required: false
@@ -20,12 +26,18 @@ permissions:
 jobs:
   package:
     uses: ./.github/workflows/maven-package.yml
+    with:
+      MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
   verify:
     needs: package
     uses: ./.github/workflows/maven-verify.yml
+    with:
+      MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
   sonar:
     needs: verify
     uses: ./.github/workflows/maven-sonar.yml
+    with:
+      MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
     secrets:
       SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -35,6 +47,8 @@ jobs:
     permissions:
       packages: write
     uses: ./.github/workflows/maven-deploy.yml
+    with:
+      MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
     secrets:
       GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}

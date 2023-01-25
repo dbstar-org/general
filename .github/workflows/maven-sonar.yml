@@ -2,6 +2,12 @@ name: Verify with Maven to SonarQube
 
 on:
   workflow_call:
+    inputs:
+      MAVEN_OPTS:
+        description: 'Parameters used to start up the JVM running Maven.'
+        default: ${{ vars.MAVEN_OPTS }}
+        required: false
+        type: string
     secrets:
       SONAR_PROJECT_KEY:
         required: false
@@ -47,4 +53,5 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
         run: mvn -B -U verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}

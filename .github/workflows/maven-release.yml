@@ -2,6 +2,12 @@ name: Release with Maven
 
 on:
   workflow_call:
+    inputs:
+      MAVEN_OPTS:
+        description: 'Parameters used to start up the JVM running Maven.'
+        default: ${{ vars.MAVEN_OPTS }}
+        required: false
+        type: string
     secrets:
       GPG_PRIVATE_KEY:
         required: false
@@ -59,6 +65,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
         run: mvn -B -U release:prepare -P release,distribution-github -DsignTag=true
 
       - name: Backup Release Properties
@@ -70,6 +77,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
         run: mvn -B -U release:perform -P release,distribution-github
 
       - name: Restore Release Properties from Backup
@@ -83,4 +91,5 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           OSS_USERNAME: ${{ secrets.OSS_USERNAME }}
           OSS_PASSWORD: ${{ secrets.OSS_PASSWORD }}
+          MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
         run: mvn -B -U release:perform -P release,distribution-ossrh

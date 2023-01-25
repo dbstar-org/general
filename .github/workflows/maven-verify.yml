@@ -2,6 +2,12 @@ name: Verify with Maven
 
 on:
   workflow_call:
+    inputs:
+      MAVEN_OPTS:
+        description: 'Parameters used to start up the JVM running Maven.'
+        default: ${{ vars.MAVEN_OPTS }}
+        required: false
+        type: string
 
 jobs:
   verify:
@@ -11,4 +17,5 @@ jobs:
       - name: Verify with Maven
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
         run: mvn -B -U clean verify

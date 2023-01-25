@@ -2,6 +2,12 @@ name: Package with Maven
 
 on:
   workflow_call:
+    inputs:
+      MAVEN_OPTS:
+        description: 'Parameters used to start up the JVM running Maven.'
+        default: ${{ vars.MAVEN_OPTS }}
+        required: false
+        type: string
 
 jobs:
   package:
@@ -11,4 +17,5 @@ jobs:
       - name: Package with Maven
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
         run: mvn -B -U clean package -DskipTests=true

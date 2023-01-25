@@ -2,6 +2,12 @@ name: Deploy to Github
 
 on:
   workflow_call:
+    inputs:
+      MAVEN_OPTS:
+        description: 'Parameters used to start up the JVM running Maven.'
+        default: ${{ vars.MAVEN_OPTS }}
+        required: false
+        type: string
     secrets:
       GPG_PRIVATE_KEY:
         required: false
@@ -31,4 +37,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
         run: mvn -B -U clean deploy -P release,distribution-github
