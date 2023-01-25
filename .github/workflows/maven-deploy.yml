@@ -4,9 +4,9 @@ on:
   workflow_call:
     secrets:
       GPG_PRIVATE_KEY:
-        required: true
+        required: false
       GPG_PASSPHRASE:
-        required: true
+        required: false
 
 jobs:
   deploy:

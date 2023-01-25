@@ -4,13 +4,13 @@ on:
   workflow_call:
     inputs:
       SONAR_PROJECT_KEY:
-        required: true
+        required: false
         type: string
     secrets:
       SONAR_TOKEN:
-        required: true
+        required: false
       SONAR_HOST_URL:
-        required: true
+        required: false
 
 jobs:
   sonar:

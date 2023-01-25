@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       SONAR_PROJECT_KEY:
-        required: true
+        required: false
         type: string
     secrets:
       SONAR_TOKEN:
@@ -12,9 +12,9 @@ on:
       SONAR_HOST_URL:
         required: false
       GPG_PRIVATE_KEY:
-        required: true
+        required: false
       GPG_PASSPHRASE:
-        required: true
+        required: false
 
 permissions:
   packages: read
