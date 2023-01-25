@@ -51,6 +51,7 @@ jobs:
         if: steps.verify.outputs.continue == 'true'
         run: |
           git config --local user.name ${{ github.actor }}
+          git config --local user.email ${{ secrets.GIT_USER_EMAIL }}
           git config --local commit.gpgsign true
 
       - name: Prepare Release
