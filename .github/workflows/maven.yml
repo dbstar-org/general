@@ -43,7 +43,7 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
   deploy:
-    needs: verify
+    needs: sonar
     permissions:
       packages: write
     uses: ./.github/workflows/maven-deploy.yml
