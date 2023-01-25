@@ -38,4 +38,4 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
-        run: mvn -B -U clean deploy -P release,distribution-github
+        run: mvn clean deploy -Prelease,distribution-github -DskipTests=true

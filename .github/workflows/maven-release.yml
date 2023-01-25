@@ -66,7 +66,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
-        run: mvn -B -U release:prepare -P release,distribution-github -DsignTag=true
+        run: mvn release:prepare -Prelease,distribution-github -DsignTag=true
 
       - name: Backup Release Properties
         if: steps.verify.outputs.continue == 'true' && steps.verify-ossrh.outputs.continue == 'true'
@@ -78,7 +78,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
-        run: mvn -B -U release:perform -P release,distribution-github
+        run: mvn release:perform -Prelease,distribution-github
 
       - name: Restore Release Properties from Backup
         if: steps.verify.outputs.continue == 'true' && steps.verify-ossrh.outputs.continue == 'true'
@@ -92,4 +92,4 @@ jobs:
           OSS_USERNAME: ${{ secrets.OSS_USERNAME }}
           OSS_PASSWORD: ${{ secrets.OSS_PASSWORD }}
           MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
-        run: mvn -B -U release:perform -P release,distribution-ossrh
+        run: mvn release:perform -Prelease,distribution-ossrh
