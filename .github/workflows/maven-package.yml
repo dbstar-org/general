@@ -3,9 +3,6 @@ name: Package with Maven
 on:
   workflow_call:
 
-env:
-  package-env: abc
-
 jobs:
   package:
     runs-on: ubuntu-latest
@@ -15,4 +12,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: mvn -B -U clean package -DskipTests=true
-      - run: env
