@@ -16,29 +16,37 @@ jobs:
   sonar:
     runs-on: ubuntu-latest
     steps:
-      - name: Notice
-        if: inputs.SONAR_PROJECT_KEY == ''
-        run: echo "::notice title=SonarQube::add vars.SONAR_PROJECT_KEY to launch Verify with Maven to SonarQube"
+      - name: Verify Parameter
+        id: verify
+        env:
+          SONAR_PROJECT_KEY: ${{ inputs.SONAR_PROJECT_KEY }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          CONTINUE=true
+          if [ -z "$SONAR_PROJECT_KEY" ]; then
+            echo "::notice title=Verify with Maven to SonarQube::add vars.SONAR_PROJECT_KEY to launch" && CONTINUE=false
+          else
+            [ -z "$SONAR_TOKEN" ] && echo "::warning title=Verify with Maven to SonarQube::need secrets.SONAR_TOKEN" && CONTINUE=false
+            [ -z "$SONAR_HOST_URL" ] && echo "::warning title=Verify with Maven to SonarQube::need secrets.SONAR_HOST_URL" && CONTINUE=false
+          fi
+          echo "continue=$(echo $CONTINUE)" >> $GITHUB_OUTPUT
       - name: Setup Maven
-        if: inputs.SONAR_PROJECT_KEY != ''
+        if: steps.verify.outputs.continue == 'true'
         uses: dbstar-org/setup-maven@v1
         with:
           java-version: 11
           fetch-depth: 0
       - name: Cache SonarQube packages
-        if: inputs.SONAR_PROJECT_KEY != ''
+        if: steps.verify.outputs.continue == 'true'
         uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
       - name: Verify with Maven to SonarQube
-        if: inputs.SONAR_PROJECT_KEY != ''
+        if: steps.verify.outputs.continue == 'true'
         env:
           GITHUB_TOKEN: ${{ github.token }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: |
-          [ -z "$SONAR_TOKEN" ] && echo "::warning title=SonarQube::need secrets.SONAR_TOKEN" && CONTINUE='stop'
-          [ -z "$SONAR_HOST_URL" ] && echo "::warning title=SonarQube::need secrets.SONAR_HOST_URL" && CONTINUE='stop'
-          [ -z "$CONTINUE" ] || exit 0 
-          mvn -B -U verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ inputs.SONAR_PROJECT_KEY }}
+        run: mvn -B -U verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ inputs.SONAR_PROJECT_KEY }}
