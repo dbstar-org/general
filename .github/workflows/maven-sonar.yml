@@ -42,6 +42,7 @@ jobs:
         with:
           java-version: 11
           fetch-depth: 0
+          cache-strategy: 'restore'
       - name: Cache SonarQube packages
         if: steps.verify.outputs.continue == 'true'
         uses: actions/cache@v3
