@@ -16,6 +16,7 @@ on:
 
 jobs:
   deploy:
+    if: github.ref_type == 'branch' && (github.ref_name == 'main' || startsWith(github.ref_name, 'snapshot-'))
     runs-on: ubuntu-latest
     steps:
       - name: Verify Parameter

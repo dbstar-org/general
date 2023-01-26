@@ -44,6 +44,7 @@ jobs:
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
   deploy:
     needs: sonar
+    if: github.ref_type == 'branch' && (github.ref_name == 'main' || startsWith(github.ref_name, 'snapshot-'))
     permissions:
       packages: write
     uses: ./.github/workflows/maven-deploy.yml
