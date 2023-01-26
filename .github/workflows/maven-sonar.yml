@@ -36,6 +36,7 @@ jobs:
           fi
           echo "continue=$CONTINUE" >> $GITHUB_OUTPUT
       - name: Setup Maven
+        id: setup-maven
         if: steps.verify.outputs.continue == 'true'
         uses: dbstar-org/setup-maven@v1
         with:
@@ -55,3 +56,8 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
         run: mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+      - name: Update Maven Repository Cache
+        if: steps.verify.outputs.continue == 'true'
+        uses: dbstar-org/maven-cache-updater@v1
+        with:
+          cache-matched-key: ${{ steps.setup-maven.outputs.cache-matched-key }}

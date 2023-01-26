@@ -13,9 +13,15 @@ jobs:
   package:
     runs-on: ubuntu-latest
     steps:
-      - uses: dbstar-org/setup-maven@v1
+      - name: Setup Maven
+        id: setup-maven
+        uses: dbstar-org/setup-maven@v1
       - name: Package with Maven
         env:
           GITHUB_TOKEN: ${{ github.token }}
           MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
         run: mvn clean package -DskipTests=true
+      - name: Update Maven Repository Cache
+        uses: dbstar-org/maven-cache-updater@v1
+        with:
+          cache-matched-key: ${{ steps.setup-maven.outputs.cache-matched-key }}

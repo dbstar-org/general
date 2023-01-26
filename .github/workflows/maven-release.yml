@@ -49,6 +49,7 @@ jobs:
           [ -z "$OSS_PASSWORD" ] && echo "::notice title=Release to Ossrh::add secrets.OSS_PASSWORD to launch" && CONTINUE=false
           echo "continue=$CONTINUE" >> $GITHUB_OUTPUT
       - name: Setup Maven
+        id: setup-maven
         if: steps.verify.outputs.continue == 'true'
         uses: dbstar-org/setup-maven@v1
         with:
@@ -93,3 +94,9 @@ jobs:
           OSS_PASSWORD: ${{ secrets.OSS_PASSWORD }}
           MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
         run: mvn release:perform -Prelease,distribution-ossrh
+
+      - name: Update Maven Repository Cache
+        if: steps.verify.outputs.continue == 'true'
+        uses: dbstar-org/maven-cache-updater@v1
+        with:
+          cache-matched-key: ${{ steps.setup-maven.outputs.cache-matched-key }}

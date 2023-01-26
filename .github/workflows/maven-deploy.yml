@@ -28,8 +28,10 @@ jobs:
           [ -z "$GPG_PRIVATE_KEY" ] && echo "::warning title=Deploy to Github::need secrets.GPG_PRIVATE_KEY" && CONTINUE=false
           [ -z "$GPG_PASSPHRASE" ] && echo "::warning title=Deploy to Github::need secrets.GPG_PASSPHRASE" && CONTINUE=false
           echo "continue=$CONTINUE" >> $GITHUB_OUTPUT
-      - uses: dbstar-org/setup-maven@v1
+      - name: Setup Maven
+        id: setup-maven
         if: steps.verify.outputs.continue == 'true'
+        uses: dbstar-org/setup-maven@v1
         with:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
       - name: Deploy to Github
@@ -39,3 +41,8 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
         run: mvn clean deploy -Prelease,distribution-github -DskipTests=true
+      - name: Update Maven Repository Cache
+        if: steps.verify.outputs.continue == 'true'
+        uses: dbstar-org/maven-cache-updater@v1
+        with:
+          cache-matched-key: ${{ steps.setup-maven.outputs.cache-matched-key }}
