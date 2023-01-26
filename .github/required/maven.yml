@@ -1,0 +1,18 @@
+name: maven
+
+on:
+  pull_request:
+    branches:
+      - main
+      - snapshot-*
+
+jobs:
+  package:
+    uses: ./.github/workflows/maven-package.yml
+  verify:
+    needs: package
+    uses: ./.github/workflows/maven-verify.yml
+  sonar:
+    needs: verify
+    uses: ./.github/workflows/maven-sonar.yml
+    secrets: inherit
