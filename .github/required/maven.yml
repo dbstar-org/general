@@ -5,14 +5,17 @@ on:
     branches:
       - main
       - snapshot-*
+    paths-ignore:
+      - '.github/workflows/release.yml'
+      - 'README.md'
 
 jobs:
   package:
-    uses: ./.github/workflows/maven-package.yml
+    uses: dbstar-org/general/.github/workflows/maven-package.yml@v1
   verify:
     needs: package
-    uses: ./.github/workflows/maven-verify.yml
+    uses: dbstar-org/general/.github/workflows/maven-verify.yml@v1
   sonar:
     needs: verify
-    uses: ./.github/workflows/maven-sonar.yml
+    uses: dbstar-org/general/.github/workflows/maven-sonar.yml@v1
     secrets: inherit
