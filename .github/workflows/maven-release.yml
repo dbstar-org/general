@@ -54,6 +54,7 @@ jobs:
         uses: dbstar-org/setup-maven@v1
         with:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          cache-strategy: 'restore'
       - name: Configure Git user
         if: steps.verify.outputs.continue == 'true'
         run: |
