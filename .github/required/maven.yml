@@ -1,4 +1,4 @@
-name: maven
+name: Maven Verify CI At Pull request
 
 on:
   pull_request:
