@@ -45,6 +45,7 @@ jobs:
           OSS_PASSWORD: ${{ secrets.OSS_PASSWORD }}
         run: |
           CONTINUE=true
+          [ -n "$OSS_STOP" ] && echo "::notice title=Release to Ossrh::stop by secrets.OSS_STOP" && CONTINUE=false
           [ -z "$OSS_USERNAME" ] && echo "::notice title=Release to Ossrh::add secrets.OSS_USERNAME to launch" && CONTINUE=false
           [ -z "$OSS_PASSWORD" ] && echo "::notice title=Release to Ossrh::add secrets.OSS_PASSWORD to launch" && CONTINUE=false
           echo "continue=$CONTINUE" >> $GITHUB_OUTPUT
