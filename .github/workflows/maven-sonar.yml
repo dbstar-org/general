@@ -56,7 +56,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           MAVEN_OPTS: ${{ inputs.MAVEN_OPTS }}
-        run: mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+        run: mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:3.8.0.2131:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
       - name: Update Maven Repository Cache
         if: steps.verify.outputs.continue == 'true'
         uses: dbstar-org/maven-cache-updater@v1
